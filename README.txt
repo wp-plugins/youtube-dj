@@ -19,13 +19,9 @@ If you got any idea please create a new topic in the support forum.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
 1. Upload `youtube-dj` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `[youtubedj]` in your templates or post
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Place `[youtubedj]` in your templates or post
 
 == Frequently Asked Questions ==
 
