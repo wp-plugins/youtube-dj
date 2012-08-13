@@ -1,5 +1,5 @@
 === YouTube DJ ===
-Contributors: MarkoHeijnen, deLans
+Contributors: markoheijnen, deLans
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B6M8D4G33FY28
 Tags: youtube, music
 Requires at least: 3.0
