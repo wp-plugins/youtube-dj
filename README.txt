@@ -11,8 +11,11 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Be a DJ with the YouTube DJ Gear.
 
 == Description ==
+When you want to add some fun to your site this plugin helps you out with that. It creates a two youtube players and a YouTube search to add songs to them.
 
+At this moment I'm working on to get the queue working. When that is done playlist and channels will be supported that get auto loaded to the queue. Also support to save playlists on WordPress itself and saving history will be worked on.
 
+If you got any idea please create a new topic in the support forum.
 
 == Installation ==
 
