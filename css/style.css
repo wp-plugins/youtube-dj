@@ -1,0 +1,162 @@
+.rack {
+	width: 300px;
+	padding: 0 0 30px 0;
+	float: left;
+	margin: 0 20px 0 0;
+	/* border: solid 1px red; */
+}
+
+.gear {
+	width: 300px;
+	float: left;
+	margin: 0 0 20px 0;
+	list-style: none;
+	padding: 0;
+}
+
+.gear h2 {
+	margin: 0 0 4px 0;
+	background: #eee;
+	font-size: 1em;
+	padding: 3px 5px;
+	font-weight: bold;
+	display: inline-block;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.deck .btns {
+	width: 300px;
+}
+
+.deck .btns a {
+	width: 60px;
+	height: 15px;
+	padding: 25px 11px;
+	background: #3B5998;
+	color: #fff;
+	display: block;
+	float: left;
+	margin: 5px 5px 0 0;
+	text-decoration: none;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+.videolist, .queuelist {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.fader {
+	height: 61px; 
+	padding: 2px 5px;
+	width: 28px;
+	margin: 5px 0 0 0;
+	float: right;
+	background: #eee;
+}
+
+.fader .gain {
+	height: 41px;
+	margin: 10px 0 0 7px;
+}
+
+.deck .btns a.stop {
+	background: #666;
+}
+
+.deck .btns a:hover {
+	background: #627AAD;
+}
+
+.deck .btns a.stop:hover {
+	background: #c00;
+}
+
+
+.result {
+	width: 300px;
+	float: left;
+	padding: 4px 0;
+	border-bottom: solid 1px #eee;
+}
+
+.result h5 {
+	margin: 2px 0 4px 0;
+}
+
+.result a {
+	padding: 3px 5px;
+	background: #3B5998;
+	color: #fff;
+	font-size: 0.8em;
+	margin: 1px 0 0 4px;
+	text-decoration: none;
+}	
+
+.result a:hover {
+	background: #627AAD;
+}
+
+.result a.fav {
+	background: #e7bf38;
+}
+.result a.fav:hover {
+	background: #f79f18;
+}
+
+.result img {
+	width: 40px;
+	height: 30px;
+	display: none;
+}
+.result .loadto {
+	float: right;
+	text-transform: uppercase;
+}
+
+
+.mixer .faders {
+	width: 290px;
+	padding: 5px;
+	background: #627AAD;
+	margin: 0;
+	float: left;
+	color: #fff;
+}
+
+.mixer .btns {
+	float: left;
+}
+
+.mixer .crossfader {
+	width: 228px;
+	float: left;
+	margin: 5px 10px;
+}
+
+.mixer a.mixer-button {
+	float: left;
+	padding: 3px 5px;
+	background: #eee;
+	color: #627AAD;
+}
+
+.mixer a.mixer-button-b {
+	float: right;
+}
+
+.form {
+	width: 300px;
+	height: 40px;
+	float: left;
+}
+.clear {
+	clear: both;
+}
+.text {
+	float: left; 
+	width: 300px;
+}
