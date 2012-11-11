@@ -48,6 +48,20 @@ function onYouTubePlayerAPIReady() {
 	jQuery('.queue').songqueue();
 }
 
+function onStateChange( newState ) {
+	if( newState.data == YT.PlayerState.PLAYING || newState.data == YT.PlayerState.BUFFERING ) {
+	}
+	else if( newState.data == YT.PlayerState.ENDED ) {
+		var queue = youtubedj_get( newState.target.a.getAttribute('queue') );
+		queue.play_next( newState.target.a.parentNode.getAttribute('id') );
+	}
+}
+
+function onPlayerReady(event) {
+	event.target.playVideo();
+	event.target.pauseVideo();
+}
+
 (function ($) {
 	"use strict";
 
@@ -55,7 +69,7 @@ function onYouTubePlayerAPIReady() {
 		function load_player(id, code) {
 			var player = new YT.Player(id, {
 				height: '250',
-				width: '300',
+				width: '320',
 				playerVars: {
 					//controls: 0
 				},
@@ -76,6 +90,8 @@ function onYouTubePlayerAPIReady() {
 
 			if (this.code.length > 0) {
 				this.player = load_player(this.player_id, this.code);
+				this.player.addEventListener("onReady", "onPlayerReady");
+				this.player.addEventListener("onStateChange", "onStateChange");
 			}
 
 			$('.play', this.deck).click(function () {
@@ -110,6 +126,8 @@ function onYouTubePlayerAPIReady() {
 				}
 			});
 		});
+
+
 	};
 
 	$.fn.mixer = function () {
@@ -260,6 +278,9 @@ function onYouTubePlayerAPIReady() {
 			var songs = new Array();
 			var list  = this.queue.find('.queuelist');
 
+			var decks = this.queue.attr('decks');
+			decks = decks.split(',');
+
 			//var queue;
 			this.add = function (songid) {
 				if(!in_array(songs, songid)) {
@@ -272,6 +293,27 @@ function onYouTubePlayerAPIReady() {
 					list.append(html);
 				}
 			};
+
+			this.play_next = function (deck) {
+				if( songs[0] ) {
+					var currentdeck = youtubedj_get( deck );
+					currentdeck.player.cueVideoById( songs[0], 0, 'small');
+
+					list.find('li[songid="' + songs[0] + '"]' ).hide( 1000, function() {
+						$(this).remove();
+					});
+
+					songs.splice(0, 1);
+
+					var _decks = decks;
+					var deck_index = decks.indexOf( deck );
+					if( deck_index != -1 )
+						_decks.splice(deck_index, 1);
+
+					deck = youtubedj_get( _decks[0] );
+					deck.player.playVideo();
+				}
+			}
 		});
 	};
 
