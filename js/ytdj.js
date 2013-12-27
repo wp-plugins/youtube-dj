@@ -12,7 +12,7 @@ window.onbeforeunload = function askConfirm() {
 	"use strict";
 
 	if (needToConfirm) {
-		return "ARE YOU SURE!?";
+		return youtubedj.are_you_sure;
 	}
 };
 
@@ -165,7 +165,7 @@ function onPlayerReady(event) {
 			var deck2 = $(this).attr('deck2');
 
 			if (deck1.length > 0 && deck2.length > 0) {
-				var defaultvalue = 60;
+				var defaultvalue = 50;
 				var oldvalue = defaultvalue;
 
 				var slider = $('.crossfader', mixer).slider({
@@ -213,7 +213,7 @@ function onPlayerReady(event) {
 				//buttons += '<a class="fav">Fav</a>';
 
 				if (queue) {
-					buttons += '<a class="queue">Add to queue</a>';
+					buttons += '<a class="queue">' + youtubedj.add_to_queue + '</a>';
 				}
 
 				$.each(decks, function (key, value) {
@@ -278,6 +278,11 @@ function onPlayerReady(event) {
 			var songs = new Array();
 			var list  = this.queue.find('.queuelist');
 
+			$( 'li', list ).each(function( index ) {
+				songs.push($(this).attr('songid'));
+			});
+
+
 			var decks = this.queue.attr('decks');
 			decks = decks.split(',');
 
@@ -305,32 +310,20 @@ function onPlayerReady(event) {
 
 					songs.splice(0, 1);
 
-					var _decks = decks;
-					var deck_index = decks.indexOf( deck );
-					if( deck_index != -1 )
-						_decks.splice(deck_index, 1);
+					var _decks = decks.slice(0);
 
-					deck = youtubedj_get( _decks[0] );
-					deck.player.playVideo();
+					var deck_index = _decks.indexOf( deck );
+					if( deck_index != -1 ) {
+						_decks.splice(deck_index, 1);
+					}
+
+					if( _decks[0] ) {
+						deck = youtubedj_get( _decks[0] );
+						deck.player.playVideo();
+					}
 				}
 			}
 		});
 	};
 
 })(jQuery);
-
-/*
-function getUrlVars()
-{
-	"use strict";
-
-	var vars = [], hash;
-	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-	for(var i = 0; i < hashes.length; i++)
-	{
-		hash = hashes[i].split('=');
-		vars.push(hash[0]);
-		vars[hash[0]] = hash[1];
-	}
-}
-*/

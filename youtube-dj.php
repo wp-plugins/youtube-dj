@@ -1,15 +1,17 @@
 <?php
 /*
 Plugin Name: YouTube DJ
-Plugin URI: http://github.com/markoheijnen/youtube-dj
-Description: Be a DJ with the YouTube DJ Gear. Contributors: Bas van der Lans
-Version: 0.2
-Author: Marko Heijnen
-Author URI: http://markoheijnen.com
-License: GPL2
+Plugin URI:  http://github.com/markoheijnen/youtube-dj
+Description: Be a DJ with the YouTube DJ Gear.
+Version:     0.3
+Author:      Marko Heijnen
+Author URI:  http://markoheijnen.com
+License:     GPL2
+Text Domain: youtube-dj
+Domain Path: /languages
 */
 
-/*  Copyright YEAR  YouTube DJ  (email : info@markoheijnen.com)
+/*  Copyright 2013  YouTube DJ  (email : info@markoheijnen.com)
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License, version 2, as 
@@ -25,23 +27,24 @@ License: GPL2
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+include 'inc/api.php';
 include 'inc/deck.php';
 include 'inc/mixer.php';
 include 'inc/queue.php';
 include 'inc/search.php';
 
 class Youtubedj {
-	private $version = '0.2';
+	private $version = '0.3';
 	private $objects = array();
 
-	function __construct() {
-		add_action( 'plugins_loaded', array( &$this, '_load' ) );
-		add_shortcode( 'youtubedj', array( &$this, 'default_player' ) );
+	public function __construct() {
+		add_action( 'plugins_loaded', array( $this, '_load' ) );
+		add_shortcode( 'youtubedj', array( $this, 'default_player' ) );
 
-		add_action( 'wp_enqueue_scripts', array( &$this, '_register_scripts' ), 1 );
+		add_action( 'wp_enqueue_scripts', array( $this, '_register_scripts' ), 1 );
 	}
 
-	function _load() {
+	public function _load() {
 		$this->objects['Deck']   = new Youtubedj_Deck;
 		$this->objects['Mixer']  = new Youtubedj_Mixer;
 		$this->objects['Queue']  = new Youtubedj_Queue;
@@ -56,7 +59,7 @@ class Youtubedj {
 		return false;
 	}
 
-	function _register_scripts() {
+	public function _register_scripts() {
 		wp_register_script( 'youtubedj', plugins_url( 'js/ytdj.js', __FILE__ ), array( 'jquery', 'jquery-ui-core', 'jquery-ui-slider' ), $this->version, true );
 
 		wp_register_style( 'youtubedj', plugins_url( 'css/style.css', __FILE__ ), array(), $this->version, 'all' );
@@ -64,30 +67,57 @@ class Youtubedj {
 	}
 
 	public function default_player( $atts = '' ) {
+		extract( shortcode_atts( array(
+			'desk1' => 'BR_DFMUzX4E',
+			'desk2' => 'sOS9aOIXPEk',
+			'user'  => false,
+		), $atts ) );
+
 		wp_enqueue_script('youtubedj');
-		wp_localize_script( 'youtubedj', 'youtubedj', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
+
+		$args = array(
+			'ajax'         => admin_url( 'admin-ajax.php' ),
+			'are_you_sure' => strtoupper( __( 'Are you sure?', 'youtube-dj' ) ),
+			'add_to_queue' => __( 'Add to queue', 'youtube-dj' ),
+		);
+		wp_localize_script( 'youtubedj', 'youtubedj', $args );
 
 		wp_enqueue_style('youtubedj');
 		wp_enqueue_style('youtubedj-jqui');
 
+		$queue = array();
+
+		if( ! $user && isset( $_GET['user'] ) ) {
+			$user_data = Youtubedj_API::user_playlist( $_GET['user'] );
+
+			if( $user_data['total'] > 1 ) {
+				$desk1 = $user_data['songs'][0]['id'];
+				$desk2 = $user_data['songs'][1]['id'];
+				unset( $user_data['songs'][0], $user_data['songs'][1] );
+
+				$queue = $user_data['songs'];
+			}
+		}
+
 		$html  = '<div class="booth">';
 
 		$html .= '<div class="rack-left rack">';
-		$html .= $this->get( 'Deck' )->html( 'deck1', 'Deck 1', 'H6M5npJ83uI', 'queue' );
+		$html .= $this->get( 'Deck' )->html( 'deck1', __( 'Deck 1', 'youtube-dj' ), $desk1, 'queue' );
 		$html .= '</div>';
 
 		$html .= '<div class="rack-right rack">';
-		$html .= $this->get( 'Deck' )->html( 'deck2', 'Deck 2', 'sOS9aOIXPEk', 'queue' );
+		$html .= $this->get( 'Deck' )->html( 'deck2', __( 'Deck 2', 'youtube-dj' ), $desk2, 'queue' );
 		$html .= '</div>';
 
 		$html .= '<div class="rack-center rack">';
-		$html .= $this->get( 'Mixer' )->html( 'Mixer', 'deck1', 'deck2' );
-		$html .= $this->get( 'Search' )->html( 'Search', 'queue', array( 'deck1', 'deck2' ) );
-		$html .= $this->get( 'Queue' )->html( 'queue', 'Queue', array( 'deck1', 'deck2' ) );
+		$html .= $this->get( 'Mixer' )->html( __( 'Mixer', 'youtube-dj' ), 'deck1', 'deck2' );
+		$html .= $this->get( 'Search' )->html( _x( 'Search', 'Compontent title', 'youtube-dj' ), 'queue', array( 'deck1', 'deck2' ) );
+		$html .= $this->get( 'Queue' )->html( 'queue', __( 'Queue', 'youtube-dj' ), array( 'deck1', 'deck2' ), $queue );
 		$html .= '</div>';
 
 		return $html;
 	}
+
 }
 
 $GLOBAL['youtubedj'] = new Youtubedj;
