@@ -1,10 +1,10 @@
 === YouTube DJ ===
-Contributors: markoheijnen, deLans
+Contributors: CodeKitchen, markoheijnen
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B6M8D4G33FY28
 Tags: youtube, music
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 0.1
+Stable tag: 0.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,12 @@ If you got any idea please create a new topic in the support forum.
 1. 
 
 == Changelog ==
+
+= 0.3 =
+* Fix localization
+* Add support to use the channel of an artist as a playlist
+* Extended the features for the shortcode
+* Update styling a bit more
 
 = 0.2 =
 * Fixes queue

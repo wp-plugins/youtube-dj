@@ -1,13 +1,29 @@
+.gear * {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.booth {
+	margin: 20px 0;
+}
+
 .rack {
 	width: 320px;
 	padding: 0 0 30px 0;
 	float: left;
-	margin: 0 20px 0 0;
+	margin: 0 10px 0 0;
 	/* border: solid 1px red; */
 }
 
 .rack-right {
 	float: right;
+	margin: 0 0 0 10px;
+}
+
+.rack-right .deck {
+	text-align: right;
 }
 
 .rack-center {
@@ -39,8 +55,8 @@
 }
 
 .deck .btns a {
-	width: 60px;
-	height: 15px;
+	width: 82px;
+	height: 65px;
 	padding: 25px 11px;
 	background: #3B5998;
 	color: #fff;
@@ -52,16 +68,16 @@
 	text-align: center;
 }
 
-.videolist, .queuelist {
+ul.videolist, ul.queuelist {
 	padding: 0;
 	margin: 0;
 	list-style: none;
 }
 
 .fader {
-	height: 61px; 
-	padding: 2px 5px;
-	width: 28px;
+	height: 65px; 
+	padding-top: 2px;
+	width: 38px;
 	margin: 5px 0 0 0;
 	float: right;
 	background: #eee;
@@ -69,7 +85,7 @@
 
 .fader .gain {
 	height: 41px;
-	margin: 10px 0 0 7px;
+	margin: 10px auto 0;
 }
 
 .deck .btns a.stop {
@@ -85,10 +101,10 @@
 }
 
 
-.result {
+li.result {
 	width: 320px;
-	float: left;
 	padding: 4px 0;
+	margin: 0px;
 	border-bottom: solid 1px #eee;
 }
 
@@ -101,7 +117,7 @@
 	background: #3B5998;
 	color: #fff;
 	font-size: 0.8em;
-	margin: 1px 0 0 4px;
+	margin: 1px 4px 0 0px;
 	text-decoration: none;
 }	
 
@@ -122,7 +138,6 @@
 	display: none;
 }
 .result .loadto {
-	float: right;
 	text-transform: uppercase;
 }
 
@@ -141,9 +156,9 @@
 }
 
 .mixer .crossfader {
-	width: 228px;
+	width: 221px;
 	float: left;
-	margin: 5px 10px;
+	margin: 7px 10px;
 }
 
 .mixer a.mixer-button {
