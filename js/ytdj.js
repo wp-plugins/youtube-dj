@@ -8,10 +8,11 @@
 
 //onError
 var needToConfirm = false;
+
 window.onbeforeunload = function askConfirm() {
 	"use strict";
 
-	if (needToConfirm) {
+	if (needToConfirm && ! jQuery('#closeModal').is(':visible') ) {
 		return youtubedj.are_you_sure;
 	}
 };
@@ -35,6 +36,76 @@ function in_array(array, id) {
 	return false;
 }
 
+// Native FullScreen JavaScript API
+(function() {
+	var 
+		fullScreenApi = { 
+			supportsFullScreen: false,
+			isFullScreen: function() { return false; }, 
+			requestFullScreen: function() {}, 
+			cancelFullScreen: function() {},
+			fullScreenEventName: '',
+			prefix: ''
+		},
+		browserPrefixes = 'webkit moz o ms khtml'.split(' ');
+	
+	// check for native support
+	if (typeof document.cancelFullScreen != 'undefined') {
+		fullScreenApi.supportsFullScreen = true;
+	} else {	 
+		// check for fullscreen support by vendor prefix
+		for (var i = 0, il = browserPrefixes.length; i < il; i++ ) {
+			fullScreenApi.prefix = browserPrefixes[i];
+			
+			if (typeof document[fullScreenApi.prefix + 'CancelFullScreen' ] != 'undefined' ) {
+				fullScreenApi.supportsFullScreen = true;
+				
+				break;
+			}
+		}
+
+	}
+	
+	// update methods to do something useful
+	if (fullScreenApi.supportsFullScreen) {
+		fullScreenApi.fullScreenEventName = fullScreenApi.prefix + 'fullscreenchange';
+		
+		fullScreenApi.isFullScreen = function() {
+			switch (this.prefix) {	
+				case '':
+					return document.fullScreen;
+				case 'webkit':
+					return document.webkitIsFullScreen;
+				default:
+					return document[this.prefix + 'FullScreen'];
+			}
+		}
+		fullScreenApi.requestFullScreen = function(el) {
+			return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullScreen']();
+		}
+		fullScreenApi.cancelFullScreen = function(el) {
+			return (this.prefix === '') ? document.cancelFullScreen() : document[this.prefix + 'CancelFullScreen']();
+		}		
+	}
+
+	// jQuery plugin
+	if (typeof jQuery != 'undefined') {
+		jQuery.fn.requestFullScreen = function() {
+	
+			return this.each(function() {
+				var el = jQuery(this);
+				if (fullScreenApi.supportsFullScreen) {
+					fullScreenApi.requestFullScreen(el);
+				}
+			});
+		};
+	}
+
+	// export api
+	window.fullScreenApi = fullScreenApi;	
+})();
+
+
 var tag = document.createElement('script');
 tag.src = "http://www.youtube.com/player_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -52,8 +123,8 @@ function onStateChange( newState ) {
 	if( newState.data == YT.PlayerState.PLAYING || newState.data == YT.PlayerState.BUFFERING ) {
 	}
 	else if( newState.data == YT.PlayerState.ENDED ) {
-		var queue = youtubedj_get( newState.target.a.getAttribute('queue') );
-		queue.play_next( newState.target.a.parentNode.getAttribute('id') );
+		var queue = youtubedj_get( newState.target.a.getAttribute('data-queue') );
+		queue.play_next( newState.target.a.parentNode.parentNode.getAttribute('id') );
 	}
 }
 
@@ -62,8 +133,32 @@ function onPlayerReady(event) {
 	event.target.pauseVideo();
 }
 
+
 (function ($) {
 	"use strict";
+
+	var follow_link = false;
+
+	$('a').click(function(event) {
+		follow_link = $(this).attr('href');
+
+		if( ! needToConfirm || event.isDefaultPrevented() || ! follow_link ) {
+			return;
+		}
+
+		event.preventDefault();
+
+		$('#closeModal').modal();
+	});
+
+	$('.btn-follow-link').on('click', function(evt) {
+		if( follow_link ) {
+			window.location.href = follow_link;
+		}
+
+		$('#closeModal').modal('hide');
+	})
+
 
 	$.fn.deck = function () {
 		function load_player(id, code) {
@@ -71,7 +166,10 @@ function onPlayerReady(event) {
 				height: '250',
 				width: '320',
 				playerVars: {
-					//controls: 0
+					controls: 0,
+					disablekb: 1,
+					showinfo: 0,
+					iv_load_policy: 3
 				},
 				videoId: code
 			});
@@ -84,7 +182,7 @@ function onPlayerReady(event) {
 			this.deck      = $(this);
 			this.player    = null;
 			this.player_id = this.deck.find('.player').attr('id');
-			this.code      = this.deck.find('.player').attr('movie');
+			this.code      = this.deck.find('.player').data('movie');
 
 			youtubedj_set(this.deck.attr('id'), this);
 
@@ -94,21 +192,23 @@ function onPlayerReady(event) {
 				this.player.addEventListener("onStateChange", "onStateChange");
 			}
 
-			$('.play', this.deck).click(function () {
-				if (deck.player) {
+			$('.play', this.deck).click(function (evt) {
+				evt.preventDefault();
+
+				if ( typeof deck.player.playVideo == 'function' ) {
 					deck.player.playVideo();
 					needToConfirm = true;
 				}
 			});
 
 			$('.pause', this.deck).click(function () {
-				if (deck.player) {
+				if ( typeof deck.player.playVideo == 'function' ) {
 					deck.player.pauseVideo();
 				}
 			});
 
 			$('.stop', this.deck).click(function () {
-				if (deck.player) {
+				if ( typeof deck.player.playVideo == 'function' ) {
 					deck.player.stopVideo();
 					needToConfirm = false;
 				}
@@ -120,7 +220,7 @@ function onPlayerReady(event) {
 				max: 100,
 				value: 100,
 				slide: function (event, ui) {
-					if (deck.player) {
+					if ( typeof deck.player.playVideo == 'function' ) {
 						deck.player.setVolume(ui.value);
 					}
 				}
@@ -161,8 +261,8 @@ function onPlayerReady(event) {
 
 		return this.each(function () {
 			var mixer = $(this);
-			var deck1 = $(this).attr('deck1');
-			var deck2 = $(this).attr('deck2');
+			var deck1 = $(this).data('deck1');
+			var deck2 = $(this).data('deck2');
 
 			if (deck1.length > 0 && deck2.length > 0) {
 				var defaultvalue = 50;
@@ -218,7 +318,7 @@ function onPlayerReady(event) {
 
 				$.each(decks, function (key, value) {
 					var title = $('#' + value).find('h2').html();
-					buttons += '<a class="loadsong" deck="' + value + '">' + title + '</a>';
+					buttons += '<a class="loadsong" data-deck="' + value + '">' + title + '</a>';
 				});
 
 				var html = '<ul class="videolist">';
@@ -242,28 +342,30 @@ function onPlayerReady(event) {
 
 		return this.each(function () {
 			var search  = $(this);
-			var queue   = search.attr('queue');
+			var queue   = search.data('queue');
 			var results = $('.searchResults', search);
 
 			$('form', search).click(function (evt) {
 				evt.preventDefault();
+
 				var searchTerm = $('.searchTerm', search).val();
 
 				if (searchTerm.length > 0) {
-					load_data(results, searchTerm, 1, search.attr('decks'), queue);
+					load_data(results, searchTerm, 1, search.data('decks'), queue);
 				}
 			});
 
 			$(search).on("click", '.loadsong', function (evt) {
 				evt.preventDefault();
 
-				var deck = youtubedj_get($(this).attr('deck'));
+				var deck = youtubedj_get($(this).data('deck'));
 				deck.player.cueVideoById($(this).closest('.song').attr('id'), 0, 'small');
 			});
 
 			if (queue) {
 				$(search).on("click", '.queue', function (evt) {
 					evt.preventDefault();
+
 					youtubedj_get(queue).add($(this).closest('.song').attr('id'));
 				});
 			}
@@ -278,12 +380,23 @@ function onPlayerReady(event) {
 			var songs = new Array();
 			var list  = this.queue.find('.queuelist');
 
+			list.sortable();
+    		list.disableSelection();
+
 			$( 'li', list ).each(function( index ) {
-				songs.push($(this).attr('songid'));
+				songs.push($(this).data('songid'));
+			});
+
+			$(list).on('click', '.song-delete', function (evt) {
+				evt.preventDefault();
+
+				$(this).closest('li').slideUp( 500, function() {
+					$(this).remove();
+				});
 			});
 
 
-			var decks = this.queue.attr('decks');
+			var decks = this.queue.data('decks');
 			decks = decks.split(',');
 
 			//var queue;
@@ -291,8 +404,9 @@ function onPlayerReady(event) {
 				if(!in_array(songs, songid)) {
 					songs.push(songid);
 
-					var html = '<li songid="' + songid + '" class="song">';
+					var html = '<li data-songid="' + songid + '" class="song">';
 					html += '<h5>' + $('#' + songid).find('h5').html() + '</h5>';
+					html += ' <span class="song-buttons"><a href="#" class="song-delete dashicons dashicons-dismiss"></a></span>';
 					html += '</li>';
 
 					list.append(html);
@@ -304,7 +418,7 @@ function onPlayerReady(event) {
 					var currentdeck = youtubedj_get( deck );
 					currentdeck.player.cueVideoById( songs[0], 0, 'small');
 
-					list.find('li[songid="' + songs[0] + '"]' ).hide( 1000, function() {
+					list.find('li[data-songid="' + songs[0] + '"]' ).hide( 1000, function() {
 						$(this).remove();
 					});
 
@@ -320,6 +434,11 @@ function onPlayerReady(event) {
 					if( _decks[0] ) {
 						deck = youtubedj_get( _decks[0] );
 						deck.player.playVideo();
+
+						if ( fullScreenApi.isFullScreen() ) {
+							window.fullScreenApi.requestFullScreen( deck.player_id );
+						}
+
 					}
 				}
 			}

@@ -10,16 +10,13 @@
 }
 
 .rack {
-	width: 320px;
-	padding: 0 0 30px 0;
 	float: left;
-	margin: 0 10px 0 0;
-	/* border: solid 1px red; */
+	margin: 0 10px 30px 0;
 }
 
 .rack-right {
 	float: right;
-	margin: 0 0 0 10px;
+	margin: 0 0 30px 10px;
 }
 
 .rack-right .deck {
@@ -29,17 +26,18 @@
 .rack-center {
 	float: none;
 	margin: 0px auto;
+	overflow: hidden;
 }
 
 .gear {
-	width: 320px;
-	float: left;
 	margin: 0 0 20px 0;
 	list-style: none;
 	padding: 0;
+	overflow: hidden;
 }
 
 .gear h2 {
+	clear: both;
 	margin: 0 0 4px 0;
 	background: #eee;
 	font-size: 1em;
@@ -47,15 +45,28 @@
 	font-weight: bold;
 	display: inline-block;
 	text-transform: uppercase;
-	cursor: pointer;
+	cursor: default;
 }
 
-.deck .btns {
-	width: 320px;
+.deck .player-holder {
+	position: relative;
+	padding-bottom: 56.25%;
+	padding-top: 30px;
+	height: 0;
+	overflow: hidden;
+	min-width: 280px;
+}
+
+.deck .player {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
 
 .deck .btns a {
-	width: 82px;
+	width: 75px;
 	height: 65px;
 	padding: 25px 11px;
 	background: #3B5998;
@@ -68,11 +79,60 @@
 	text-align: center;
 }
 
-ul.videolist, ul.queuelist {
+ul.videolist {
 	padding: 0;
 	margin: 0;
 	list-style: none;
 }
+
+ul.videolist li {
+	cursor: pointer;
+	padding: 10px 10px;
+}
+
+ul.videolist h5 {
+	margin: 0;
+}
+
+ul.videolist a:hover {
+	text-decoration: none;
+}
+
+ul.videolist li:hover {
+	background: #eee;
+}
+
+ul.queuelist li { 
+	position: relative;
+}
+ul.queuelist h5 { 
+	margin-right: 20px;
+}
+
+ul.queuelist .song-buttons {
+	display: none;
+	position: absolute;
+	right: 5px;
+	top: 7px;
+	height: 100%;
+}
+
+ul.queuelist li:hover .song-buttons {
+	display: block;
+}
+
+ul.queuelist .dashicons {
+	vertical-align: middle;
+}
+
+ul.queuelist .dashicons-dismiss {
+	color: #a00;
+}
+
+ul.queuelist .dashicons-dismiss:hover {
+	color: #f00;
+}
+
 
 .fader {
 	height: 65px; 
@@ -102,7 +162,6 @@ ul.videolist, ul.queuelist {
 
 
 li.result {
-	width: 320px;
 	padding: 4px 0;
 	margin: 0px;
 	border-bottom: solid 1px #eee;
@@ -143,11 +202,10 @@ li.result {
 
 
 .mixer .faders {
-	width: 290px;
 	padding: 5px;
 	background: #627AAD;
 	margin: 0;
-	float: left;
+	overflow: hidden;
 	color: #fff;
 }
 
@@ -156,9 +214,7 @@ li.result {
 }
 
 .mixer .crossfader {
-	width: 221px;
-	float: left;
-	margin: 7px 10px;
+	margin: 7px 35px;
 }
 
 .mixer a.mixer-button {
@@ -172,15 +228,15 @@ li.result {
 	float: right;
 }
 
-.form {
-	width: 320px;
-	height: 40px;
-	float: left;
+@media screen and (max-width: 750px) {
+	.rack-center {
+		clear: both;
+	}
 }
-.clear {
-	clear: both;
-}
-.text {
-	float: left; 
-	width: 320px;
+
+@media screen and (max-width: 610px) {
+	.rack {
+		float: none;
+		margin: 0 0 30px 0;
+	}
 }
